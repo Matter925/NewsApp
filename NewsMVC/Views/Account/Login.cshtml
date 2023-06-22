@@ -1,0 +1,115 @@
+﻿
+@using NewsMVC.ViewModels;
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model LoginDto
+
+
+<div class="row d-flex justify-content-center ">
+    <div class="col-md-4 ">
+        <section >
+            <form id="loginForm">
+                
+                <h2 style="font-family :cairo " class="m-4">Login </h2>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="form-floating">
+                    <input type="email" asp-for="Email" id="email" class="form-control" required="required" aria-required="true" />
+                    <label asp-for="Email" class="form-label"></label>
+                    <span asp-validation-for="Email" class="text-danger" id="EmailDan"></span>
+                    <div id="EmailDan"></div>
+                </div>
+                <div class="form-floating m-2">
+                    <input asp-for="Password" type="password" id="password" class="form-control" required="required" autocomplete="current-password" aria-required="true" />
+                    <label asp-for="Password" class="form-label"></label>
+                    <span asp-validation-for="Password" class="text-danger"  id="PassDan"></span>
+                    <div id="PassDan"></div>
+                </div>
+                
+                <div>
+                    <button type="button" class="w-100 btn btn-lg btn-primary" onclick=LoginData()>Log in</button>
+                </div>
+            </form>
+            <div id="result"></div>
+        </section>
+    </div>
+    
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+}
+<script type="text/javascript">
+    function LoginData() {
+
+        var formData = {
+            email: $("#email").val(),
+            password: $("#password").val(),
+        };
+        if (! $("#email").val().trim()) 
+        {
+            
+            $('#EmailDan').text("The Email field is required");
+            return false;
+        } else if (!$("#password").val().trim()) {
+            $('#PassDan').text("The Password field is required");
+            return false;
+        } else if (!$("#email").val().trim() && !$("#password").val().trim())
+        {
+            $('#EmailDan').text("The Email fieldis required");
+            $('#PassDan').text("The Password field is required");
+            return false;
+        }
+        console.log(formData)
+        // AJAX request
+        $.ajax({
+            url: "https://localhost:7056/api/AuthUser/Login", // API endpoint
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function (response) {
+                if (response.success) {
+                    console.log(response)
+                    // Login successful, update UI or redirect
+                    clearForm();
+                    //alert(response.message);
+                    $('#result').text(response.message);
+                    var token = response.token;
+                    var url = '@Url.Action("Index", "Home", new { area ="Admin" })' + '?token=' + encodeURIComponent(token);
+                    window.location.href = url;
+                    
+                    toastr.success(response.message, '', { timeOut: 500, });
+                    //clearForm();
+                }else{
+                    
+                    $('#result').text(response.message);
+                }
+            },
+            error: function (data) {
+                // Handle error case
+                console.log(data);
+                clearForm();
+
+                $('#result').addClass('text-danger').text(data.responseJSON.message).fadeIn().delay(3000).fadeOut();
+                
+                
+                //alert(data.responseText);
+            },
+
+        });
+    };
+
+
+
+    function clearForm() {
+        $('#loginForm')[0].reset();
+    }
+
+</script>
+
+

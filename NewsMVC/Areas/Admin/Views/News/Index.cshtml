@@ -1,0 +1,100 @@
+﻿@using NewsMVC.Areas.Admin.ViewModels;
+@model List<NewVM>
+@{
+    Layout = "_LayoutAdmin";
+}
+
+<div class="card text-center">
+     <div class="card m-5">
+        <div class="card-header bg-secondary" style="height :80px ">
+            <a class="btn btn-light action-button" role="button" href="~/Admin/News/Create" style="margin: 5px;width: 116.7px;margin-right: 0px;font-family: Cairo, sans-serif;">Add News</a>
+           </div>
+      </div>
+</div>
+<div class="col-md-10 m-3">
+    <div class="card  text-center p-5">
+        <table class="table table-bordered table-striped" id="newsTable">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>PublicationDate</th>
+                    <th>CreationDate</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be dynamically added using jQuery -->
+            </tbody>
+       </table>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" ></script>
+<script src="~/datatable/jquery.datatables.js"></script>
+<script src="~/datatable/jquery.datatables.min.js"></script>
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+
+        AddData();
+      
+      });
+        
+
+    function AddData()
+    {
+        var newData =[];
+        $.ajax({
+            url: '/Admin/News/GetNews',
+            method: 'GET',
+            async :false,
+            dataType: 'json',
+            success: function (data) {
+                // Access the JSON data and update the view
+                $.each(data ,function(key , value){
+                    var editBtn="<a onclick='EditNews(this)' class='btn btn-primary' >Edit</a>";
+                    var deletBtn = "<a onclick='DeleteNews(this)' class='btn btn-danger' >Delete</a>";
+                    var hdn= "<input type='hidden' value="+ value.id + " />";
+                    var action = editBtn + " | " + deletBtn + hdn;
+                    newData.push([value.title, value.author.name, value.publicationDate, value.creationDate, action])
+                });
+                console.log(data);
+            }
+        });
+       
+        $('#newsTable').DataTable({
+
+            data: newData
+        });
+    }
+   
+    function DeleteNews(element) {
+        var token = '@ViewBag.Token';
+        var code = $(element).closest('tr').find('input[type=hidden]').val();
+        console.log(code);
+        if (confirm("do you want to remove?")) {
+            $.ajax({
+                type: "DELETE",
+                url: "https://localhost:7056/api/News/DeleteNew/" + code,
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function (data) {
+                    console.log(data);
+                    if (data) {
+                        alert('Removed successfully.');
+                        window.location.reload();
+                    } else {
+                        alert("Failure due to :" + data)
+                    }
+                },
+                failure: function (err) {
+
+                }
+            });
+        }
+
+    }
+    
+</script>

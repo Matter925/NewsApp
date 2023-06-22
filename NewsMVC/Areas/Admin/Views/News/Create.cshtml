@@ -1,0 +1,160 @@
+﻿@{
+    Layout = "_LayoutAdmin";
+}
+
+
+<div class="row d-flex justify-content-center  m-2 ">
+    <div class="col-sm-8 ">
+        <div class="card  border-primary">
+            <div class="card-header text-center bg-success m-3" style="height :75px ">
+                <h2 style="font-family :cairo " class=" card-title m-2"> Add News </h2>
+            </div>
+
+            <div class="card-body">
+                <form id="NewForm" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div id="mssage"></div>
+                    <div class="card-body">
+                        <div class="form-group m-4">
+                            <label class="form-label">Title</label>
+                            <input type="text" id="title" class="form-control" placeholder="Enter Title" required="required" aria-required="true" />
+                            <span class="text-danger" id="TitleDan"></span>
+                        </div>
+                        <div class="text-danger" id="TitleDan">
+                        </div>
+
+                        <div class="form-group m-4">
+                            <label for="exampleInputEmail1">Author</label>
+                            @*<select type="text" asp-for="AuthorId" class="form-control" id="AuthorId" asp-items="ViewBag.Authors"> </select>*@
+                            @Html.DropDownList("AuthorId", ViewBag.Authors as SelectList, "Select an option", new { @class = "form-control" })
+                            <span class="text-danger" id="AuthorDan"></span>
+                        </div>
+                        <div class="text-danger" id="AuthorDan">
+                        </div>
+                        <div class="form-group m-4">
+                            <label for="exampleInputEmail1">Description</label>
+                            <input type="text" asp-for="Description" class="form-control" id="description" placeholder="Enter Description">
+                            <span class="text-danger" id="descriptionDan"></span>
+                        </div>
+                        <div class="text-danger" id="descriptionDan">
+                        </div>
+                        <div class="form-group m-4">
+                            <label class="form-label">PublicationDate</label>
+                            <input type="date" id="publicationDate" class="form-control" required="required" aria-required="true" />
+                            <span class="text-danger" id="publicationDen"></span>
+                        </div>
+                        <div class="text-danger" id="publicationDen">
+                        </div>
+                        <div class="form-group m-4">
+                            <label for="exampleInputFile">Choose Image</label>
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" name="File" asp-for="File" id="uploadFile" class="custom-file-input">
+                                    <span class="text-danger" id="ImageDen"></span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="text-danger" id="ImageDen">
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+
+                    <div class="card-footer">
+                        <button type="button" class="btn btn-primary" onclick="AddNew()">Submit</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function AddNew() {
+
+        clearError();
+
+        if (!$('#title').val().trim()) {
+            $('#TitleDan').text('Title is required.')
+        }
+
+        // Validate AuthorId
+        if (!$('#AuthorId').val().trim()) {
+            $('#AuthorDan').text('Author is required.');
+
+        }
+
+        // Validate Description
+        if (!$('#description').val().trim()) {
+            $('#descriptionDan').text('Description is required.');
+
+        }
+
+        // Validate Publication Date
+        if (!$('#publicationDate').val().trim()) {
+            $('#publicationDen').text('Publication Date is required.');
+        }
+        if (!$('#uploadFile')[0].files[0]) {
+            $('#ImageDen').text('Image is required.');
+            return false;
+        }
+
+        var fdata = new FormData();
+        var fileInput = $('#uploadFile')[0];
+        var file = fileInput.files[0];
+        fdata.append("Image", file);
+        fdata.append("Title", $("#title").val());
+        fdata.append("Description", $("#description").val());
+        fdata.append("PublicationDate", $("#publicationDate").val());
+        fdata.append("AuthorId", $("#AuthorId").val());
+        console.log(fdata);
+        var token = '@ViewBag.Token';
+        $.ajax({
+            url: "https://localhost:7056/api/News/CreateNews",
+            type: "POST",
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            data: fdata,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                if (result.success) {
+                    clearForm();
+                    alert('Added successfully.');
+                    console.log(result);
+                   
+                }
+            },
+
+        });
+
+    }
+    function clearForm() {
+        $('#NewForm')[0].reset();
+    }
+    function clearError() {
+        $("#title").on("input", function () {
+            // Clear error message when user starts typing
+            $("#TitleDan").text(" ");
+        });
+        $("#AuthorId").on("input", function () {
+            // Clear error message when user starts typing
+            $("#AuthorDan").text(" ");
+        });
+        $("#description").on("input", function () {
+            // Clear error message when user starts typing
+            $("#descriptionDan").text(" ");
+        });
+        $("#publicationDate").on("input", function () {
+            // Clear error message when user starts typing
+            $("#publicationDen").text(" ");
+        });
+        $("#uploadFile").on("input", function () {
+            // Clear error message when user starts typing
+            $("#ImageDen").text(" ");
+        });
+    }
+</script>

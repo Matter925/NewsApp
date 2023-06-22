@@ -1,0 +1,188 @@
+﻿@using NewsMVC.Areas.Admin.ViewModels;
+@{
+    Layout = "_LayoutAdmin";
+}
+@model List< AuthorDto>
+
+<div class="row d-flex justify-content-center ">
+    <div class="col-md-8 m-4 ">
+        <div class="card text-center border-primary">
+            
+            <div class="card-header bg-success m-5" style="height :75px ">
+
+                <h2 style="font-family :cairo " class=" card-title m-2"> Add New Author </h2>
+            </div>
+            <div class="card-body" style="height :250px ">
+            <form id="AuthorForm">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-floating">
+                    <input type="text"  id="name" class="form-control" required="required" aria-required="true" />
+                    <label  class="form-label">Name</label>
+                    <span class="text-danger" id="NameDan"></span>
+                    
+                </div>
+                <div class="m-2">
+                    <button type="button" class="w-100 btn btn-lg btn-primary" onclick=AddAuthor()>Add</button>
+                </div>
+            </form>
+            <div id="result"></div>
+          </div>
+         </div> 
+    </div>
+    
+    <div class="col-md-10 m-5 ">
+        <div class="card text-center" >
+
+            <div class="card-header bg-light m-5" style="height :75px ">
+
+                <h2 style="font-family :cairo " class=" card-title m-2"> Authors Details </h2>
+            </div>
+            <div class="card-body table-responsive" id="authorTableContainer">
+                <table class="table table-bordered table-striped " id="authorsTable">
+                    <thead>
+                        <tr>
+                            <th>Author Name</th>
+
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+           </div>
+      </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/datatable/jquery.datatables.js"></script>
+<script src="~/datatable/jquery.datatables.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        
+        AddData();
+
+    });
+
+
+    function AddData() {
+      
+        var authorData = [];
+        $.ajax({
+            url: '/Admin/Author/GetAuthors',
+            method: 'GET',
+            async: false,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                // Access the JSON data and update the view
+                $.each(data, function (key, value) {
+                    var editBtn = "<a onclick='EditNews(this)' class='btn btn-primary' >Edit</a>";
+                    var deletBtn = "<a onclick='DeletAuthor(this)' class='btn btn-danger' >Delete</a>";
+                    var hdn = "<input type='hidden' value=" + value.id + " />";
+                    var action = editBtn + " | " + deletBtn + hdn;
+                    authorData.push([value.name, action]);
+                });
+            }
+        });
+
+        $('#authorsTable').DataTable({
+
+            data: authorData
+        });
+    }
+
+
+
+
+    function AddAuthor() {
+        var token = '@ViewBag.Token';
+        var formData = {
+            name: $("#name").val(),
+        };
+        $("#name").on("input", function () {
+            // Clear error message when user starts typing
+            $("#NameDan").text(" ");
+        });
+        console.log(formData);
+        if (!$("#name").val().trim()) {
+
+            $('#NameDan').text("The Name field is required");
+            return false;
+          
+        } else if ($("#name").val().length < 3 || $("#name").val().length > 20) {
+            $("#NameDan").text("Author's name must be between 3 and 20 characters.");
+           return false;
+        }
+
+        $.ajax({
+            url: "https://localhost:7056/api/Authors/CreateNewAuthor",
+            type: "POST",
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function (response) {
+                if (response.success) {
+                    console.log(response);
+                    clearForm();
+                    alert('Added successfully.');
+
+                    $('#result').text(response.message).fadeIn().delay(3000).fadeOut();
+                    window.location.reload();
+                }
+            },
+            error: function (data) {
+                // Handle error case
+                console.log(data);
+                clearForm();
+                alert('Added successfully.');
+                $('#result').addClass('text-danger').text(data.responseJSON.message).fadeIn().delay(3000).fadeOut();
+
+
+                //alert(data.responseText);
+            },
+        });
+    }
+
+
+    function DeletAuthor(element) {
+        var token = '@ViewBag.Token';
+        var code = $(element).closest('tr').find('input[type=hidden]').val();
+        console.log(code);
+        if (confirm("do you want to remove?")) {
+        $.ajax({
+            url: "https://localhost:7056/api/Authors/DeleteAuthor/" + code,
+            type: "DELETE",
+            headers: {
+                    'Authorization': 'Bearer ' + token
+             },
+            success: function (result) {
+                    console.log(result);
+                    if (result.success) {
+                        alert('Removed successfully.');
+                        window.location.reload();
+                    } else {
+                        alert("Failure due to :" + result)
+                    }
+            },
+            error:function(response){
+                console.log(response);
+
+            },
+
+        });
+        }
+
+    }
+
+    function clearForm() {
+        $('#AuthorForm')[0].reset();
+    }
+
+    </script>
