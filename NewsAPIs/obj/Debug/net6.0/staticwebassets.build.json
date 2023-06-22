@@ -1,0 +1,54 @@
+{
+  "Version": 1,
+  "Hash": "ha9GLm5IOaqzWTTvYwE7NJXPRuksvy6bSp+AlBal9zQ=",
+  "Source": "NewsAPIs",
+  "BasePath": "_content/NewsAPIs",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "NewsAPIs\\wwwroot",
+      "Source": "NewsAPIs",
+      "ContentRoot": "E:\\Projects\\NewsAPIs\\NewsAPIs\\wwwroot\\",
+      "BasePath": "_content/NewsAPIs",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "E:\\Projects\\NewsAPIs\\NewsAPIs\\wwwroot\\Images\\Milion.jpeg",
+      "SourceId": "NewsAPIs",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Projects\\NewsAPIs\\NewsAPIs\\wwwroot\\",
+      "BasePath": "_content/NewsAPIs",
+      "RelativePath": "Images/Milion.jpeg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Images\\Milion.jpeg"
+    },
+    {
+      "Identity": "E:\\Projects\\NewsAPIs\\NewsAPIs\\wwwroot\\Images\\Screenshot 2023-06-17 233252.png",
+      "SourceId": "NewsAPIs",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Projects\\NewsAPIs\\NewsAPIs\\wwwroot\\",
+      "BasePath": "_content/NewsAPIs",
+      "RelativePath": "Images/Screenshot 2023-06-17 233252.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Images\\Screenshot 2023-06-17 233252.png"
+    }
+  ]
+}
